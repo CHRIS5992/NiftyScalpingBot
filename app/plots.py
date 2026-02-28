@@ -342,11 +342,9 @@ def plot_regime_transitions(df_feat):
         x=labels, y=labels,
         colorscale=[[0, '#1E293B'], [1, '#2563EB']],
         text=[[f'{v:.1f}%' for v in row] for row in vals],
-        texttemplate='%{text}', textfont=dict(size=13),
+        texttemplate='%{text}', textfont=dict(size=13, color='#F1F5F9'),
         colorbar=dict(title='Probability %'),
     ))
-    # Apply per-cell text colors
-    fig.data[0].textfont.color = [c for row in text_colors for c in row]
     return _apply_layout(fig, 'Regime Transition Probabilities', height=420,
                          xaxis_title='To Regime', yaxis_title='From Regime')
 
