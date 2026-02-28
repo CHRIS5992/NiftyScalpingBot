@@ -5,134 +5,127 @@ from __future__ import annotations
 
 
 def inject_custom_css() -> str:
-    """Return custom CSS for Bloomberg-dark institutional theme."""
+    """Return custom CSS — clean institutional dark theme."""
     return """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
     /* ── Global ── */
     .stApp {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
-    /* ── Hide default Streamlit branding ── */
+    /* ── Hide Streamlit chrome ── */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
 
     /* ── Metric Cards ── */
     div[data-testid="stMetric"] {
-        background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-        border: 1px solid #21262d;
-        border-radius: 12px;
-        padding: 16px 20px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: #1E293B;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        padding: 14px 18px;
     }
     div[data-testid="stMetric"]:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-        border-color: #FFD700;
+        border-color: #475569;
     }
     div[data-testid="stMetric"] label {
-        color: #8b949e !important;
-        font-size: 0.8rem !important;
+        color: #94A3B8 !important;
+        font-size: 0.78rem !important;
         font-weight: 500 !important;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.04em;
     }
     div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
-        color: #e6edf3 !important;
-        font-size: 1.6rem !important;
-        font-weight: 700 !important;
+        color: #F1F5F9 !important;
+        font-size: 1.5rem !important;
+        font-weight: 600 !important;
     }
 
-    /* ── Section Headers ── */
+    /* ── Header ── */
     .gradient-header {
-        background: linear-gradient(90deg, #FFD700 0%, #FF9800 50%, #FF5722 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 1.8rem;
-        font-weight: 800;
-        margin-bottom: 8px;
-        letter-spacing: -0.5px;
+        color: #F1F5F9;
+        font-size: 1.6rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        margin-bottom: 4px;
     }
     .sub-header {
-        color: #8b949e;
-        font-size: 0.95rem;
+        color: #64748B;
+        font-size: 0.9rem;
         font-weight: 400;
-        margin-bottom: 24px;
-    }
-
-    /* ── Cards ── */
-    .info-card {
-        background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-        border: 1px solid #21262d;
-        border-radius: 12px;
-        padding: 20px 24px;
-        margin-bottom: 16px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    .info-card h4 {
-        color: #FFD700;
-        margin-bottom: 8px;
-        font-weight: 700;
-    }
-    .info-card p, .info-card li {
-        color: #c9d1d9;
-        line-height: 1.7;
+        margin-bottom: 20px;
     }
 
     /* ── Tabs ── */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 2px;
-        background-color: #161b22;
-        border-radius: 8px;
-        padding: 4px;
+        gap: 0;
+        background-color: transparent;
+        border-bottom: 1px solid #334155;
+        padding: 0;
     }
     .stTabs [data-baseweb="tab"] {
-        border-radius: 6px;
-        padding: 8px 16px;
-        font-weight: 600;
+        border-radius: 0;
+        padding: 10px 20px;
+        font-weight: 500;
         font-size: 0.85rem;
+        color: #94A3B8;
+        border-bottom: 2px solid transparent;
     }
     .stTabs [aria-selected="true"] {
-        background-color: #21262d !important;
+        background-color: transparent !important;
+        color: #60A5FA !important;
+        border-bottom: 2px solid #60A5FA !important;
     }
 
     /* ── Sidebar ── */
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
-        border-right: 1px solid #21262d;
+        background: #0F172A;
+        border-right: 1px solid #1E293B;
     }
-    section[data-testid="stSidebar"] .stMarkdown h1,
     section[data-testid="stSidebar"] .stMarkdown h2,
-    section[data-testid="stSidebar"] .stMarkdown h3 {
-        color: #FFD700 !important;
+    section[data-testid="stSidebar"] .stMarkdown h3,
+    section[data-testid="stSidebar"] .stMarkdown h4 {
+        color: #F1F5F9 !important;
+        font-weight: 600 !important;
     }
 
     /* ── DataFrames ── */
     .stDataFrame {
-        border: 1px solid #21262d;
-        border-radius: 8px;
+        border: 1px solid #334155;
+        border-radius: 6px;
         overflow: hidden;
     }
 
     /* ── Expanders ── */
     .streamlit-expanderHeader {
-        background: #161b22;
-        border-radius: 8px;
-        font-weight: 600;
+        background: #1E293B;
+        border-radius: 6px;
+        font-weight: 500;
     }
 
     /* ── Divider ── */
     hr {
-        border-color: #21262d;
+        border-color: #1E293B;
     }
 
-    /* ── Positive/Negative indicators ── */
-    .metric-positive { color: #00E676 !important; }
-    .metric-negative { color: #FF5252 !important; }
-    .metric-neutral  { color: #FFD700 !important; }
+    /* ── Download button ── */
+    .stDownloadButton > button {
+        background: #1E293B !important;
+        border: 1px solid #334155 !important;
+        color: #F1F5F9 !important;
+        font-weight: 500 !important;
+        border-radius: 6px !important;
+    }
+    .stDownloadButton > button:hover {
+        border-color: #60A5FA !important;
+        color: #60A5FA !important;
+    }
+
+    /* ── Semantic colors ── */
+    .metric-positive { color: #34D399 !important; }
+    .metric-negative { color: #F87171 !important; }
+    .metric-neutral  { color: #FBBF24 !important; }
     </style>
     """

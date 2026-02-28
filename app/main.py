@@ -65,12 +65,12 @@ st.markdown(inject_custom_css(), unsafe_allow_html=True)
 # SIDEBAR — CONTROL PANEL
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 with st.sidebar:
-    st.markdown('<h2 style="color:#FFD700;">⚡ Control Panel</h2>', unsafe_allow_html=True)
-    st.caption('Adjust parameters → backtest re-runs live')
+    st.markdown('<h2 style="color:#F1F5F9;font-weight:600;">Control Panel</h2>', unsafe_allow_html=True)
+    st.caption('Adjust parameters — backtest re-runs live')
     st.divider()
 
     # ── Capital & Position Sizing ──
-    st.markdown('#### 💰 Capital & Sizing')
+    st.markdown('#### Capital & Sizing')
     initial_capital = st.number_input('Initial Capital (Rs)', 100_000, 50_000_000, 1_000_000, step=100_000)
     lot_size = st.number_input('Lot Size', 1, 500, 65, step=1)
     max_risk = st.slider('Max Risk Per Trade %', 0.5, 5.0, 1.0, 0.5, format='%.1f')
@@ -78,7 +78,7 @@ with st.sidebar:
     st.divider()
 
     # ── Strategy Parameters ──
-    st.markdown('#### 🎯 Strategy Parameters')
+    st.markdown('#### Strategy Parameters')
     stop_loss_pct = st.slider('Stop Loss % (spot)', -0.005, -0.0005, -0.0015, 0.0005, format='%.4f')
     trailing_activation = st.slider('Trailing Activation %', 0.0005, 0.005, 0.0012, 0.0001, format='%.4f')
     trailing_distance = st.slider('Trailing Distance %', 0.0001, 0.003, 0.0005, 0.0001, format='%.4f')
@@ -87,7 +87,7 @@ with st.sidebar:
     st.divider()
 
     # ── ML Parameters ──
-    st.markdown('#### 🧠 ML Parameters')
+    st.markdown('#### ML Parameters')
     min_signal_prob = st.slider('Min Signal Prob', 0.20, 0.60, 0.32, 0.01, format='%.2f')
     min_expected_return = st.slider('Min Expected Return', 0.00005, 0.001, 0.0001, 0.00005, format='%.5f')
     n_estimators = st.slider('RF Trees', 50, 500, 100, 50)
@@ -97,7 +97,7 @@ with st.sidebar:
     st.divider()
 
     # ── Cost Parameters ──
-    st.markdown('#### 💸 Costs')
+    st.markdown('#### Costs')
     slippage_rate = st.slider('Slippage Rate', 0.0, 0.005, 0.001, 0.0005, format='%.4f')
     brokerage = st.number_input('Brokerage (Rs/trade)', 0, 500, 40, step=10)
 
@@ -172,11 +172,11 @@ scalers = []
 feature_cols = []
 fold_results = []
 
-progress_bar = st.progress(0, text='⏳ Loading data...')
+progress_bar = st.progress(0, text='Loading data...')
 try:
     df_raw = load_data()
     data_summary = get_data_summary(df_raw)
-    progress_bar.progress(15, text=f'✅ Data loaded — {data_summary["total_rows"]:,} rows  |  Engineering features...')
+    progress_bar.progress(15, text=f'Data loaded — {data_summary["total_rows"]:,} rows  |  Engineering features...')
 
     df_feat = run_feature_engineering(
         df_raw,
@@ -184,7 +184,7 @@ try:
         cfg['HV_LONG_WINDOW'],
         cfg['MOMENTUM_THRESHOLD'],
     )
-    progress_bar.progress(35, text=f'✅ Features built ({len(df_feat):,} rows)  |  Training ML (walk-forward)...')
+    progress_bar.progress(35, text=f'Features built ({len(df_feat):,} rows)  |  Training ML...')
 
     df_feat, models, scalers, feature_cols, fold_results = run_ml_training(
         df_feat,
@@ -196,7 +196,7 @@ try:
     )
 
     avg_acc = np.mean([f['accuracy'] for f in fold_results])
-    progress_bar.progress(65, text=f'✅ ML trained (Avg Acc: {avg_acc:.4f})  |  Running backtest...')
+    progress_bar.progress(65, text=f'ML trained (Avg Acc: {avg_acc:.4f})  |  Running backtest...')
 
     tdf, summary, risk_mgr = run_backtest(df_feat, cfg)
     if not tdf.empty:
@@ -205,7 +205,7 @@ try:
 
     n_trades = summary.get('total_trades', 0)
     net_pnl = summary.get('total_pnl', 0)
-    progress_bar.progress(100, text=f'✅ Done — {n_trades} trades  |  Net P&L: Rs {net_pnl:,.0f}')
+    progress_bar.progress(100, text=f'Complete — {n_trades} trades  |  Net P&L: Rs {net_pnl:,.0f}')
 except Exception as e:
     st.error(f'Pipeline error: {e}')
     import traceback
@@ -215,23 +215,23 @@ except Exception as e:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # HEADER
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-st.markdown('<div class="gradient-header">⚡ Regime-Switch ML Bot — NIFTY 5-Min Scalper</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Walk-Forward RandomForest  •  4-Regime Classification  •  Dynamic Position Sizing</div>', unsafe_allow_html=True)
+st.markdown('<div class="gradient-header">Regime-Switch ML Bot — NIFTY 5-Min Scalper</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">Walk-Forward RandomForest  ·  4-Regime Classification  ·  Dynamic Position Sizing</div>', unsafe_allow_html=True)
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # TABS
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 tabs = st.tabs([
-    '📋 Overview',
-    '📊 Results & Equity',
-    '🔍 Trades',
-    '🎬 Day Replay',
-    '🌐 Regimes',
-    '🧠 ML Analytics',
-    '🎲 Monte Carlo',
-    '📐 Rolling Sharpe',
-    '🧪 Robustness',
+    'Overview',
+    'Results & Equity',
+    'Trades',
+    'Day Replay',
+    'Regimes',
+    'ML Analytics',
+    'Monte Carlo',
+    'Rolling Sharpe',
+    'Robustness',
 ])
 
 
@@ -241,7 +241,7 @@ tabs = st.tabs([
 with tabs[0]:
     c1, c2 = st.columns([2, 1])
     with c1:
-        st.markdown('#### 🎯 Strategy Description')
+        st.markdown('#### Strategy Description')
         st.markdown("""
         **Regime-Switch ML Bot** — A NIFTY 5-minute scalping strategy using a RandomForest model
         trained via walk-forward (TimeSeriesSplit) to predict short-term price momentum.
@@ -256,7 +256,7 @@ with tabs[0]:
         and anti-martingale consecutive loss penalty.
         """)
 
-        st.markdown('#### ⚙️ Entry Conditions')
+        st.markdown('#### Entry Conditions')
         st.markdown(f"""
         1. ML signal probability ≥ **{cfg['MIN_SIGNAL_PROB']:.2f}**
         2. Market regime ≠ Range LV (regime 3 blocked)
@@ -264,7 +264,7 @@ with tabs[0]:
         4. Dynamic lot sizing via RiskManager
         """)
 
-        st.markdown('#### 🚪 Exit Rules')
+        st.markdown('#### Exit Rules')
         st.markdown(f"""
         1. **Stop Loss:** Spot move < **{cfg['STOP_LOSS_PCT']*100:.2f}%**
         2. **Trailing Stop:** Activate at **+{cfg['TRAILING_STOP_ACTIVATION']*100:.2f}%**, trail by **{cfg['TRAILING_STOP_DISTANCE']*100:.2f}%**
@@ -273,7 +273,7 @@ with tabs[0]:
         """)
 
     with c2:
-        st.markdown('#### 📋 Parameters')
+        st.markdown('#### Parameters')
         params_data = {
             'Parameter': ['Instrument', 'Timeframe', 'Type', 'Lot Size', 'ML Model',
                           'Walk-Forward Folds', 'Capital', 'Max Risk/Trade'],
@@ -285,7 +285,7 @@ with tabs[0]:
         st.dataframe(pd.DataFrame(params_data), hide_index=True, use_container_width=True)
 
         # Data Summary
-        st.markdown('#### 📦 Data Summary')
+        st.markdown('#### Data Summary')
         if data_summary:
             st.metric('Period', f'{data_summary["start_date"]} → {data_summary["end_date"]}')
             c2a, c2b = st.columns(2)
@@ -295,7 +295,7 @@ with tabs[0]:
 
         # ML Stats
         if fold_results:
-            st.markdown('#### 🧠 Walk-Forward Performance')
+            st.markdown('#### Walk-Forward Performance')
             for fr in fold_results:
                 st.metric(f'Fold {fr["fold"]} Accuracy', f'{fr["accuracy"]:.4f}')
             avg_acc = np.mean([f['accuracy'] for f in fold_results])
@@ -303,7 +303,7 @@ with tabs[0]:
 
         # Feature engineering summary
         if not df_feat.empty:
-            st.markdown('#### 📊 Feature Summary')
+            st.markdown('#### Feature Summary')
             st.metric('Total Features', len(feature_cols))
             st.metric('Target Positive %', f'{df_feat["target"].mean()*100:.2f}%')
             regime_counts = df_feat['market_regime'].value_counts().sort_index()
@@ -316,7 +316,7 @@ with tabs[0]:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 with tabs[1]:
     if not tdf.empty:
-        st.markdown('### 🏆 Key Metrics')
+        st.markdown('### Key Metrics')
 
         # Row 1: Top-line metrics (matching notebook P&L ANALYSIS output)
         r1 = st.columns(5)
@@ -341,13 +341,13 @@ with tabs[1]:
         st.divider()
 
         # ── Equity Curve ──
-        st.markdown('### 📈 Cumulative Equity Curve')
+        st.markdown('### Equity Curve')
         st.plotly_chart(plot_equity_curve(tdf, cfg, metrics), use_container_width=True)
 
-        st.markdown('### 📉 Drawdown')
+        st.markdown('### Drawdown')
         st.plotly_chart(plot_drawdown(tdf, cfg), use_container_width=True)
 
-        st.markdown('### 📊 Monthly P&L Heatmap')
+        st.markdown('### Monthly P&L Heatmap')
         piv = compute_monthly_heatmap_data(tdf)
         if not piv.empty:
             st.plotly_chart(plot_monthly_heatmap(piv), use_container_width=True)
@@ -375,17 +375,17 @@ with tabs[1]:
         st.divider()
 
         # Rolling Win Rate
-        st.markdown('### 📈 Rolling Win Rate')
+        st.markdown('### Rolling Win Rate')
         st.plotly_chart(plot_rolling_win_rate(tdf), use_container_width=True)
 
         # Lot performance
-        st.markdown('### 📊 Performance by Lot Size')
+        st.markdown('### Performance by Lot Size')
         lot_perf = compute_lot_performance(tdf)
         if not lot_perf.empty:
             st.dataframe(lot_perf, use_container_width=True)
 
         # Exit breakdown
-        st.markdown('### 🚪 Exit Breakdown')
+        st.markdown('### Exit Breakdown')
         ec1, ec2 = st.columns(2)
         with ec1:
             exit_df = compute_exit_breakdown(tdf)
@@ -395,7 +395,7 @@ with tabs[1]:
             st.plotly_chart(plot_exit_reasons_pie(tdf), use_container_width=True)
 
         # Monthly breakdown
-        st.markdown('### 📅 Monthly Breakdown')
+        st.markdown('### Monthly Breakdown')
         monthly = compute_monthly_breakdown(tdf)
         if not monthly.empty:
             st.dataframe(monthly, use_container_width=True)
@@ -408,12 +408,12 @@ with tabs[1]:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 with tabs[2]:
     if not tdf.empty:
-        st.markdown('### 📋 Trade Log')
+        st.markdown('### Trade Log')
 
         # Download button
         csv_data = tdf.to_csv(index=False).encode('utf-8')
         st.download_button(
-            label='📥 Download Trades as CSV',
+            label='Download Trades as CSV',
             data=csv_data,
             file_name='trades.csv',
             mime='text/csv',
@@ -428,8 +428,8 @@ with tabs[2]:
         avail_cols = [c for c in display_cols if c in tdf.columns]
         st.dataframe(
             tdf[avail_cols].style.applymap(
-                lambda v: 'color: #00E676' if isinstance(v, (int, float)) and v > 0
-                else ('color: #FF5252' if isinstance(v, (int, float)) and v < 0 else ''),
+                lambda v: 'color: #34D399' if isinstance(v, (int, float)) and v > 0
+                else ('color: #F87171' if isinstance(v, (int, float)) and v < 0 else ''),
                 subset=[c for c in ['net_pnl', 'gross_pnl', 'pnl_pct'] if c in avail_cols],
             ),
             use_container_width=True,
@@ -461,17 +461,17 @@ with tabs[2]:
         st.plotly_chart(plot_trade_scatter(tdf), use_container_width=True)
 
         # Hourly performance
-        st.markdown('### 🕐 Hourly Performance')
+        st.markdown('### Hourly Performance')
         st.plotly_chart(plot_hourly_pnl(tdf), use_container_width=True)
 
         # Position sizing
-        st.markdown('### 📏 Position Size vs P&L')
+        st.markdown('### Position Size vs P&L')
         st.plotly_chart(plot_position_vs_pnl(tdf), use_container_width=True)
 
         # Entry Quality
         eq = compute_entry_quality(tdf)
         if eq:
-            st.markdown('### 🔬 Entry Quality Analysis')
+            st.markdown('### Entry Quality Analysis')
             q1, q2 = st.columns(2)
             with q1:
                 st.markdown('**Winners**')
@@ -490,7 +490,7 @@ with tabs[2]:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 with tabs[3]:
     if not tdf.empty:
-        st.markdown('### 🎬 Day Replay')
+        st.markdown('### Day Replay')
         dates = get_available_dates(tdf)
         if dates:
             selected_date = st.selectbox('Select Trading Day', dates, index=len(dates) - 1)
@@ -525,7 +525,7 @@ with tabs[3]:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 with tabs[4]:
     if not tdf.empty:
-        st.markdown('### 🌐 Market Regime Analysis')
+        st.markdown('### Market Regime Analysis')
 
         # Regime distribution from features
         if not df_feat.empty:
@@ -535,11 +535,11 @@ with tabs[4]:
                 st.dataframe(regime_dist, hide_index=True, use_container_width=True)
 
         # Regime P&L bar chart
-        st.markdown('#### 📊 P&L by Market Regime')
+        st.markdown('#### P&L by Market Regime')
         st.plotly_chart(plot_regime_pnl(tdf), use_container_width=True)
 
         # Regime trade performance table
-        st.markdown('#### 🎯 Regime Trade Performance')
+        st.markdown('#### Regime Trade Performance')
         regime_perf = compute_regime_performance(tdf, REGIME_MAP)
         if not regime_perf.empty:
             st.dataframe(regime_perf, use_container_width=True)
@@ -550,13 +550,13 @@ with tabs[4]:
 
         # Regime transitions
         if not df_feat.empty:
-            st.markdown('#### 🔄 Regime Transition Matrix')
+            st.markdown('#### Regime Transition Matrix')
             st.plotly_chart(plot_regime_transitions(df_feat), use_container_width=True)
 
         st.divider()
 
         # Additional trend/vol classification
-        st.markdown('#### 📈 Trend Regime')
+        st.markdown('#### Trend Regime')
         tdf_regime = classify_vol_trend_regimes(df_raw, tdf)
         if 'trend_regime' in tdf_regime.columns:
             trend_perf = get_regime_performance(tdf_regime, 'trend_regime')
@@ -567,7 +567,7 @@ with tabs[4]:
                 with tc2:
                     st.plotly_chart(plot_regime_performance(trend_perf, 'Trend Regime'), use_container_width=True)
 
-        st.markdown('#### 📊 Volatility Regime')
+        st.markdown('#### Volatility Regime')
         if 'vol_regime_label' in tdf_regime.columns:
             vol_perf = get_regime_performance(tdf_regime, 'vol_regime_label')
             if not vol_perf.empty:
@@ -585,7 +585,7 @@ with tabs[4]:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 with tabs[5]:
     if not tdf.empty:
-        st.markdown('### 🧠 ML Analytics')
+        st.markdown('### ML Analytics')
 
         # Walk-Forward fold accuracy
         if fold_results:
@@ -600,7 +600,7 @@ with tabs[5]:
 
         # Feature importance
         if models:
-            st.markdown('#### 🌲 Feature Importance (Final Model)')
+            st.markdown('#### Feature Importance (Final Model)')
             final_model = models[-1]
             feat_imp = pd.Series(final_model.feature_importances_, index=feature_cols)
             st.plotly_chart(plot_feature_importance(feat_imp, top_n=15), use_container_width=True)
@@ -609,13 +609,13 @@ with tabs[5]:
 
         # Signal distribution
         if not df_feat.empty and 'ml_signal' in df_feat.columns:
-            st.markdown('#### 📊 ML Signal Distribution')
+            st.markdown('#### ML Signal Distribution')
             st.plotly_chart(plot_signal_distribution(df_feat, cfg['MIN_SIGNAL_PROB']), use_container_width=True)
 
         st.divider()
 
         # Signal vs P&L analysis
-        st.markdown('#### 📈 Signal Quality Analysis')
+        st.markdown('#### Signal Quality Analysis')
         vol_analysis = compute_vol_change_analysis(tdf)
         if vol_analysis:
             va1, va2, va3 = st.columns(3)
@@ -631,7 +631,7 @@ with tabs[5]:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 with tabs[6]:
     if not tdf.empty:
-        st.markdown('### 🎲 Monte Carlo Simulation')
+        st.markdown('### Monte Carlo Simulation')
         n_sims = st.slider('Number of Simulations', 100, 5000, 1000, 100, key='mc_sims')
         mc = run_monte_carlo(tdf['net_pnl'], cfg['INITIAL_CAPITAL'], n_sims)
 
@@ -644,7 +644,7 @@ with tabs[6]:
 
         st.plotly_chart(plot_monte_carlo(mc), use_container_width=True)
 
-        with st.expander('📊 Detailed Statistics'):
+        with st.expander('Detailed Statistics'):
             st.json({
                 'Mean Final P&L': f'Rs {mc["mean_final"]:,.0f}',
                 'Std Dev': f'Rs {mc["std_final"]:,.0f}',
@@ -662,7 +662,7 @@ with tabs[6]:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 with tabs[7]:
     if not tdf.empty:
-        st.markdown('### 📐 Rolling Sharpe Ratio')
+        st.markdown('### Rolling Sharpe Ratio')
         window = st.slider('Rolling Window (days)', 10, 120, 30, 5, key='sharpe_window')
 
         rolling_df = compute_rolling_sharpe(tdf, window)
@@ -687,7 +687,7 @@ with tabs[7]:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 with tabs[8]:
     if not tdf.empty:
-        st.markdown('### 🧪 Robustness Testing')
+        st.markdown('### Robustness Testing')
 
         # Slippage stress
         st.markdown('#### Slippage Stress Test')
@@ -723,8 +723,8 @@ with tabs[8]:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 st.divider()
 st.markdown(
-    '<div style="text-align:center;color:#8b949e;padding:16px 0;">'
-    '⚡ Regime-Switch ML Bot  •  Walk-Forward RandomForest  •  4-Regime Classification  •  '
+    '<div style="text-align:center;color:#64748B;padding:16px 0;font-size:0.85rem;">'
+    'Regime-Switch ML Bot  ·  Walk-Forward RandomForest  ·  4-Regime Classification  ·  '
     'Built for institutional quant research'
     '</div>',
     unsafe_allow_html=True,

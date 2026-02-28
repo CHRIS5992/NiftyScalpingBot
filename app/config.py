@@ -48,18 +48,25 @@ BROKERAGE_PER_TRADE: float = 40   # Rs 40 flat per round-trip
 # REGIME NAMES & COLORS
 # ----------------------------------------------------------------
 REGIME_MAP: dict = {0: 'Trend HV', 1: 'Trend LV', 2: 'Range HV', 3: 'Range LV'}
-REGIME_COLORS: dict = {0: '#d62728', 1: '#2ca02c', 2: '#ff7f0e', 3: '#1f77b4'}
+REGIME_COLORS: dict = {0: '#F87171', 1: '#34D399', 2: '#FBBF24', 3: '#60A5FA'}
 
 # ----------------------------------------------------------------
 # COLOR PALETTE
 # ----------------------------------------------------------------
-GOLD   = '#FFD700'
-GREEN  = '#00E676'
-RED    = '#FF5252'
-DARK   = '#0d1117'
-BLUE   = '#40C4FF'
-ORANGE = '#FF9800'
-PURPLE = '#CE93D8'
+ACCENT = '#60A5FA'   # Blue-400
+GREEN  = '#34D399'   # Emerald-400
+RED    = '#F87171'   # Red-400
+DARK   = '#0F172A'   # Slate-900
+BLUE   = '#60A5FA'   # Blue-400
+ORANGE = '#FBBF24'   # Amber-400
+PURPLE = '#A78BFA'   # Violet-400
+SLATE  = '#1E293B'   # Slate-800
+BORDER = '#334155'   # Slate-700
+TEXT   = '#F1F5F9'   # Slate-100
+MUTED  = '#94A3B8'   # Slate-400
+
+# Legacy alias
+GOLD   = ACCENT
 
 
 def get_config_dict(**overrides) -> dict:

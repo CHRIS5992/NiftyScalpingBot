@@ -10,33 +10,39 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # Color palette
-GOLD   = '#FFD700'
-GREEN  = '#00E676'
-RED    = '#FF5252'
-DARK   = '#0d1117'
-BLUE   = '#40C4FF'
-ORANGE = '#FF9800'
-PURPLE = '#CE93D8'
+ACCENT = '#60A5FA'
+GREEN  = '#34D399'
+RED    = '#F87171'
+DARK   = '#0F172A'
+BLUE   = '#60A5FA'
+ORANGE = '#FBBF24'
+PURPLE = '#A78BFA'
+SLATE  = '#1E293B'
+BORDER = '#334155'
+TEXT   = '#F1F5F9'
+MUTED  = '#94A3B8'
+GOLD   = ACCENT  # legacy alias
 
-REGIME_COLORS = {0: '#d62728', 1: '#2ca02c', 2: '#ff7f0e', 3: '#1f77b4'}
+REGIME_COLORS = {0: '#F87171', 1: '#34D399', 2: '#FBBF24', 3: '#60A5FA'}
 REGIME_MAP = {0: 'Trend HV', 1: 'Trend LV', 2: 'Range HV', 3: 'Range LV'}
 
 _LAYOUT = dict(
     paper_bgcolor=DARK,
-    plot_bgcolor='#161b22',
-    font=dict(family='Inter, sans-serif', color='#e6edf3', size=12),
+    plot_bgcolor=SLATE,
+    font=dict(family='Inter, -apple-system, sans-serif', color=TEXT, size=12),
     margin=dict(l=60, r=30, t=60, b=50),
     hovermode='x unified',
-    legend=dict(bgcolor='#161b22', bordercolor='#21262d', borderwidth=1),
-    xaxis=dict(gridcolor='#21262d', zerolinecolor='#21262d'),
-    yaxis=dict(gridcolor='#21262d', zerolinecolor='#21262d'),
+    legend=dict(bgcolor='rgba(0,0,0,0)', bordercolor=BORDER, borderwidth=1,
+                font=dict(color=MUTED, size=11)),
+    xaxis=dict(gridcolor=BORDER, zerolinecolor=BORDER),
+    yaxis=dict(gridcolor=BORDER, zerolinecolor=BORDER),
 )
 
 
 def _apply_layout(fig, title='', height=500, **kwargs):
     layout = {
         **_LAYOUT,
-        'title': dict(text=title, font=dict(color=GOLD, size=16), x=0.5),
+        'title': dict(text=title, font=dict(color=TEXT, size=15, family='Inter, sans-serif'), x=0, xanchor='left'),
         'height': height,
     }
     layout.update(kwargs)
@@ -58,15 +64,15 @@ def plot_equity_curve(tdf, cfg, metrics):
     fig.add_trace(go.Scatter(
         x=list(range(1, len(tdf) + 1)), y=cum_pnl,
         mode='lines', name='Cumulative P&L',
-        line=dict(color=GREEN, width=3),
-        fill='tozeroy', fillcolor='rgba(0,230,118,0.08)',
+        line=dict(color=ACCENT, width=2),
+        fill='tozeroy', fillcolor='rgba(96,165,250,0.08)',
     ))
-    fig.add_hline(y=0, line_dash='dash', line_color='white', opacity=0.3)
+    fig.add_hline(y=0, line_dash='dash', line_color=BORDER, opacity=0.6)
 
     net = metrics.get('net_pnl', 0)
     roi = metrics.get('roi', 0)
-    return _apply_layout(fig, f'Cumulative Equity Curve  |  Net P&L: Rs {net:,.0f} (ROI: {roi:.2f}%)',
-                         height=500, xaxis_title='Trade Number', yaxis_title='Net Profit (Rs)')
+    return _apply_layout(fig, f'Cumulative Equity  |  Net P&L: Rs {net:,.0f} ({roi:.2f}%)',
+                         height=480, xaxis_title='Trade Number', yaxis_title='Net Profit (Rs)')
 
 
 # ============================================================
@@ -85,9 +91,9 @@ def plot_drawdown(tdf, cfg):
         x=list(range(1, len(tdf) + 1)), y=drawdown,
         mode='lines', name='Drawdown',
         line=dict(color=RED, width=2),
-        fill='tozeroy', fillcolor='rgba(255,82,82,0.2)',
+        fill='tozeroy', fillcolor='rgba(248,113,113,0.12)',
     ))
-    return _apply_layout(fig, 'Historical Drawdown (%)', height=400,
+    return _apply_layout(fig, 'Drawdown (%)', height=380,
                          xaxis_title='Trade Number', yaxis_title='Drawdown %')
 
 
@@ -101,14 +107,14 @@ def plot_monthly_heatmap(piv):
     max_val = np.abs(piv.values).max()
     fig = go.Figure(go.Heatmap(
         z=piv.values, x=piv.columns.tolist(), y=piv.index.tolist(),
-        colorscale=[[0, RED], [0.5, DARK], [1, GREEN]],
+        colorscale=[[0, '#DC2626'], [0.5, '#1E293B'], [1, '#16A34A']],
         zmin=-max_val, zmax=max_val,
         text=[[f'Rs {v:,.0f}' for v in row] for row in piv.values],
-        texttemplate='%{text}', textfont=dict(size=11, color='white'),
+        texttemplate='%{text}', textfont=dict(size=11, color='#F1F5F9'),
         hovertemplate='Year: %{y}<br>Month: %{x}<br>P&L: %{text}<extra></extra>',
         colorbar=dict(title='P&L (Rs)'),
     ))
-    return _apply_layout(fig, 'Monthly Returns Heatmap', height=max(350, len(piv) * 80))
+    return _apply_layout(fig, 'Monthly P&L Heatmap', height=max(350, len(piv) * 80))
 
 
 # ============================================================
@@ -125,9 +131,9 @@ def plot_rolling_win_rate(tdf, window=50):
     fig.add_trace(go.Scatter(
         x=list(range(1, len(tdf) + 1)), y=rolling_wr,
         mode='lines', name=f'{window}-Trade Win Rate',
-        line=dict(color=BLUE, width=2.5),
+        line=dict(color=ACCENT, width=2),
     ))
-    fig.add_hline(y=avg_wr, line_dash='dash', line_color=RED, opacity=0.7,
+    fig.add_hline(y=avg_wr, line_dash='dash', line_color=MUTED, opacity=0.7,
                   annotation_text=f'Average {avg_wr:.1f}%')
     return _apply_layout(fig, f'Rolling Win Rate ({window}-Trade Window)', height=420,
                          xaxis_title='Trade Number', yaxis_title='Win Rate (%)')
@@ -152,8 +158,8 @@ def plot_trade_scatter(tdf):
         x=losses.index, y=losses['net_pnl'], mode='markers',
         name='Losses', marker=dict(color=RED, size=7, opacity=0.6),
     ))
-    fig.add_hline(y=0, line_color='white', opacity=0.5)
-    return _apply_layout(fig, 'Trade P&L Scatter Plot', height=450,
+    fig.add_hline(y=0, line_color=BORDER, opacity=0.5)
+    return _apply_layout(fig, 'Trade P&L Scatter', height=420,
                          xaxis_title='Trade Number', yaxis_title='P&L (Rs)')
 
 
@@ -170,10 +176,10 @@ def plot_exit_reasons_pie(tdf):
     fig = go.Figure(go.Pie(
         labels=exit_counts.index, values=exit_counts.values,
         marker=dict(
-            colors=[colors.get(r, '#888') for r in exit_counts.index],
-            line=dict(color=DARK, width=3),
+            colors=[colors.get(r, MUTED) for r in exit_counts.index],
+            line=dict(color=DARK, width=2),
         ),
-        textinfo='percent+label', textfont=dict(size=12),
+        textinfo='percent+label', textfont=dict(size=11, color=TEXT),
         hole=0.4,
     ))
     return _apply_layout(fig, 'Trade Exit Reasons', height=420)
@@ -191,8 +197,8 @@ def plot_exit_reasons_bar(tdf):
     counts = tdf['exit_reason'].value_counts()
     fig = go.Figure(go.Bar(
         x=counts.index, y=counts.values,
-        marker_color=[exit_colors.get(r, '#888') for r in counts.index],
-        text=counts.values, textposition='auto', textfont=dict(size=14),
+        marker_color=[exit_colors.get(r, MUTED) for r in counts.index],
+        text=counts.values, textposition='auto', textfont=dict(size=12, color=TEXT),
     ))
     return _apply_layout(fig, 'Exit Reason Breakdown', height=400,
                          xaxis_title='Exit Reason', yaxis_title='Count')
@@ -209,15 +215,15 @@ def plot_regime_pnl(tdf, regime_map=None):
         regime_map = REGIME_MAP
     regime_perf = tdf.groupby('regime')['net_pnl'].sum()
     labels = [regime_map.get(i, f'R{i}') for i in regime_perf.index]
-    colors = [REGIME_COLORS.get(i, '#888') for i in regime_perf.index]
+    colors = [REGIME_COLORS.get(i, MUTED) for i in regime_perf.index]
 
     fig = go.Figure(go.Bar(
         x=labels, y=regime_perf.values, marker_color=colors,
         text=[f'Rs {v:,.0f}' for v in regime_perf.values],
         textposition='auto',
     ))
-    fig.add_hline(y=0, line_color='white', opacity=0.5)
-    return _apply_layout(fig, 'Absolute P&L by Market Regime', height=450,
+    fig.add_hline(y=0, line_color=BORDER, opacity=0.5)
+    return _apply_layout(fig, 'P&L by Market Regime', height=420,
                          xaxis_title='Regime', yaxis_title='Total Net P&L (Rs)')
 
 
@@ -232,9 +238,9 @@ def plot_hold_distribution(tdf):
         x=tdf['bars_held'], nbinsx=12,
         marker_color=PURPLE, opacity=0.8,
     ))
-    fig.add_vline(x=tdf['bars_held'].mean(), line_dash='dash', line_color=GOLD,
+    fig.add_vline(x=tdf['bars_held'].mean(), line_dash='dash', line_color=MUTED,
                   annotation_text=f'Avg {tdf["bars_held"].mean():.1f} bars')
-    return _apply_layout(fig, 'Trade Duration Distribution (5-Min Bars)', height=400,
+    return _apply_layout(fig, 'Trade Duration Distribution', height=380,
                          xaxis_title='Bars Held', yaxis_title='Number of Trades')
 
 
@@ -255,8 +261,8 @@ def plot_hourly_pnl(tdf):
         text=[f'Rs {v:,.0f}' for v in hour_perf.values],
         textposition='auto',
     ))
-    fig.add_hline(y=0, line_color='white', opacity=0.5)
-    return _apply_layout(fig, 'Net Profit by Hour of Day', height=420,
+    fig.add_hline(y=0, line_color=BORDER, opacity=0.5)
+    return _apply_layout(fig, 'Net Profit by Hour', height=400,
                          xaxis_title='Hour (24H)', yaxis_title='Total P&L (Rs)')
 
 
@@ -273,10 +279,10 @@ def plot_position_vs_pnl(tdf):
         fig.add_trace(go.Scatter(
             x=sub['lots'], y=sub['net_pnl'], mode='markers',
             name=REGIME_MAP.get(regime, f'R{regime}'),
-            marker=dict(color=REGIME_COLORS.get(regime, '#888'), size=8, opacity=0.7),
+            marker=dict(color=REGIME_COLORS.get(regime, MUTED), size=7, opacity=0.6),
         ))
-    fig.add_hline(y=0, line_dash='dash', line_color='white', opacity=0.5)
-    return _apply_layout(fig, 'Position Size vs Trade Outcome', height=450,
+    fig.add_hline(y=0, line_dash='dash', line_color=BORDER, opacity=0.5)
+    return _apply_layout(fig, 'Position Size vs Outcome', height=420,
                          xaxis_title='Lots Deployed', yaxis_title='Net P&L (Rs)')
 
 
@@ -292,10 +298,11 @@ def plot_feature_importance(feat_imp, top_n=10):
     top = feat_imp.sort_values(ascending=False).head(top_n)
     fig = go.Figure(go.Bar(
         x=top.values[::-1], y=top.index[::-1], orientation='h',
-        marker_color='#17becf', opacity=0.85,
+        marker_color=ACCENT, opacity=0.85,
         text=[f'{v:.4f}' for v in top.values[::-1]], textposition='auto',
+        textfont=dict(color=TEXT, size=11),
     ))
-    return _apply_layout(fig, f'Top {top_n} ML Feature Importances', height=max(350, top_n * 35),
+    return _apply_layout(fig, f'Top {top_n} Feature Importances', height=max(350, top_n * 35),
                          xaxis_title='Relative Importance', yaxis_title='Feature')
 
 
@@ -308,11 +315,11 @@ def plot_signal_distribution(df_feat, min_signal_prob):
         return go.Figure()
     fig = go.Figure(go.Histogram(
         x=df_feat['ml_signal'], nbinsx=50,
-        marker_color='indigo', opacity=0.8,
+        marker_color=PURPLE, opacity=0.8,
     ))
     fig.add_vline(x=min_signal_prob, line_dash='dash', line_color=RED, line_width=2,
                   annotation_text=f'Threshold ({min_signal_prob})')
-    return _apply_layout(fig, 'ML Signal Probability Distribution', height=420,
+    return _apply_layout(fig, 'ML Signal Distribution', height=400,
                          xaxis_title='Signal Probability', yaxis_title='Frequency (Bars)')
 
 
@@ -327,15 +334,20 @@ def plot_regime_transitions(df_feat):
         df_feat['market_regime'].shift(), df_feat['market_regime'], normalize='index'
     )
     labels = [REGIME_MAP.get(i, f'R{i}') for i in range(4)]
+    vals = transition.values * 100
+    # Use dark text on light cells, light text on dark cells
+    text_colors = [['#0F172A' if v < 50 else '#F1F5F9' for v in row] for row in vals]
     fig = go.Figure(go.Heatmap(
-        z=transition.values * 100,
+        z=vals,
         x=labels, y=labels,
-        colorscale='Blues',
-        text=[[f'{v:.1f}%' for v in row] for row in transition.values * 100],
-        texttemplate='%{text}', textfont=dict(size=12),
+        colorscale=[[0, '#1E293B'], [1, '#2563EB']],
+        text=[[f'{v:.1f}%' for v in row] for row in vals],
+        texttemplate='%{text}', textfont=dict(size=13),
         colorbar=dict(title='Probability %'),
     ))
-    return _apply_layout(fig, 'Market Regime Transition Probabilities', height=450,
+    # Apply per-cell text colors
+    fig.data[0].textfont.color = [c for row in text_colors for c in row]
+    return _apply_layout(fig, 'Regime Transition Probabilities', height=420,
                          xaxis_title='To Regime', yaxis_title='From Regime')
 
 
@@ -359,14 +371,14 @@ def plot_monte_carlo(mc_results):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=x, y=p95, mode='lines', line=dict(width=0), showlegend=False))
     fig.add_trace(go.Scatter(x=x, y=p5, mode='lines', line=dict(width=0),
-                             fill='tonexty', fillcolor='rgba(64,196,255,0.1)',
-                             name='5th-95th Percentile'))
+                             fill='tonexty', fillcolor='rgba(96,165,250,0.08)',
+                             name='5th–95th Pctl'))
     fig.add_trace(go.Scatter(x=x, y=p75, mode='lines', line=dict(width=0), showlegend=False))
     fig.add_trace(go.Scatter(x=x, y=p25, mode='lines', line=dict(width=0),
-                             fill='tonexty', fillcolor='rgba(64,196,255,0.2)',
-                             name='25th-75th Percentile'))
+                             fill='tonexty', fillcolor='rgba(96,165,250,0.18)',
+                             name='25th–75th Pctl'))
     fig.add_trace(go.Scatter(x=x, y=p50, mode='lines',
-                             name='Median', line=dict(color=GOLD, width=2.5)))
+                             name='Median', line=dict(color=ACCENT, width=2)))
 
     # Overlay actual strategy path
     actual = mc_results.get('actual_path', None)
@@ -393,9 +405,9 @@ def plot_per_trade_pnl(tdf):
         x=list(range(1, len(tdf) + 1)), y=tdf['net_pnl'],
         marker_color=colors, opacity=0.85,
     ))
-    fig.add_hline(y=0, line_color='white', opacity=0.3)
+    fig.add_hline(y=0, line_color=BORDER, opacity=0.3)
     wr = (tdf['net_pnl'] > 0).mean() * 100
-    return _apply_layout(fig, f'Net P&L per Trade  |  Win Rate {wr:.1f}%', height=450,
+    return _apply_layout(fig, f'Per-Trade P&L  |  Win Rate {wr:.1f}%', height=420,
                          xaxis_title='Trade #', yaxis_title='Net P&L (Rs)')
 
 
@@ -409,8 +421,8 @@ def plot_win_loss_pie(tdf):
     lc = (tdf['net_pnl'] <= 0).sum()
     fig = go.Figure(go.Pie(
         labels=['Wins', 'Losses'], values=[wc, lc],
-        marker=dict(colors=[GREEN, RED], line=dict(color=DARK, width=3)),
-        textinfo='percent+value', textfont=dict(size=14), hole=0.4,
+        marker=dict(colors=[GREEN, RED], line=dict(color=DARK, width=2)),
+        textinfo='percent+value', textfont=dict(size=12, color=TEXT), hole=0.4,
     ))
     return _apply_layout(fig, f'Win/Loss — {wc}W / {lc}L', height=380)
 
@@ -425,8 +437,8 @@ def plot_pnl_distribution(tdf):
         x=tdf['net_pnl'], nbinsx=40,
         marker_color=BLUE, opacity=0.8,
     ))
-    fig.add_vline(x=0, line_color='white', opacity=0.5)
-    fig.add_vline(x=tdf['net_pnl'].mean(), line_dash='dash', line_color=GOLD,
+    fig.add_vline(x=0, line_color=BORDER, opacity=0.5)
+    fig.add_vline(x=tdf['net_pnl'].mean(), line_dash='dash', line_color=MUTED,
                   annotation_text=f'Mean Rs {tdf["net_pnl"].mean():,.0f}')
     return _apply_layout(fig, 'Trade P&L Distribution', height=400,
                          xaxis_title='Net P&L (Rs)', yaxis_title='Frequency')
@@ -463,7 +475,7 @@ def plot_daily_trade_count(tdf):
         x=daily['entry_date'], y=daily['count'],
         marker_color=BLUE, opacity=0.7,
     ))
-    fig.add_hline(y=daily['count'].mean(), line_dash='dash', line_color=GOLD,
+    fig.add_hline(y=daily['count'].mean(), line_dash='dash', line_color=MUTED,
                   annotation_text=f'Avg {daily["count"].mean():.1f}')
     return _apply_layout(fig, 'Daily Trade Count', height=380,
                          xaxis_title='Date', yaxis_title='Trades')
@@ -481,9 +493,9 @@ def plot_rolling_sharpe(rolling_df, window=30):
         mode='lines', name=f'{window}-day Rolling Sharpe',
         line=dict(color=BLUE, width=2),
     ))
-    fig.add_hline(y=0, line_color='white', opacity=0.3)
+    fig.add_hline(y=0, line_color=BORDER, opacity=0.3)
     fig.add_hline(y=1, line_dash='dash', line_color=GREEN, opacity=0.5, annotation_text='Sharpe = 1')
-    fig.add_hline(y=2, line_dash='dash', line_color=GOLD, opacity=0.5, annotation_text='Sharpe = 2')
+    fig.add_hline(y=2, line_dash='dash', line_color=ACCENT, opacity=0.5, annotation_text='Sharpe = 2')
     return _apply_layout(fig, f'{window}-Day Rolling Sharpe Ratio', height=400,
                          xaxis_title='Date', yaxis_title='Sharpe Ratio')
 
@@ -533,12 +545,12 @@ def plot_sensitivity_heatmap(df):
         return go.Figure()
     fig = go.Figure(go.Heatmap(
         z=df.values, x=df.columns.tolist(), y=df.index.tolist(),
-        colorscale=[[0, RED], [0.5, DARK], [1, GREEN]],
+        colorscale=[[0, '#DC2626'], [0.5, '#1E293B'], [1, '#16A34A']],
         text=[[f'Rs {v:,.0f}' for v in row] for row in df.values],
-        texttemplate='%{text}', textfont=dict(size=10),
+        texttemplate='%{text}', textfont=dict(size=10, color='#F1F5F9'),
         colorbar=dict(title='Net P&L'),
     ))
-    return _apply_layout(fig, 'Parameter Sensitivity (Stop vs Signal)', height=450)
+    return _apply_layout(fig, 'Parameter Sensitivity (Stop vs Signal)', height=420)
 
 
 # ============================================================
@@ -562,28 +574,28 @@ def plot_day_replay(day_data):
             x=pd.to_datetime(trades['entry_time']),
             y=trades['entry_price'],
             mode='markers', name='Entry',
-            marker=dict(color=GREEN, size=14, symbol='triangle-up',
-                        line=dict(color='white', width=1)),
+            marker=dict(color=GREEN, size=12, symbol='triangle-up',
+                        line=dict(color=DARK, width=1)),
         ))
         exit_colors = []
         for r in trades['exit_reason']:
             if r in ('STOP_LOSS', 'TRAILING_STOP'):
                 exit_colors.append(RED)
             else:
-                exit_colors.append(GOLD)
+                exit_colors.append(ACCENT)
         fig.add_trace(go.Scatter(
             x=pd.to_datetime(trades['exit_time']),
             y=trades['exit_price'],
             mode='markers', name='Exit',
-            marker=dict(color=exit_colors, size=14, symbol='triangle-down',
-                        line=dict(color='white', width=1)),
+            marker=dict(color=exit_colors, size=12, symbol='triangle-down',
+                        line=dict(color=DARK, width=1)),
             text=trades['exit_reason'],
             hovertemplate='Exit (%{text}) @ Rs %{y:.2f}<extra></extra>',
         ))
 
     date_str = day_data.get('summary', {}).get('date', '')
     pnl = day_data.get('summary', {}).get('day_pnl', 0)
-    return _apply_layout(fig, f'Day Replay — {date_str}  |  P&L: Rs {pnl:,.2f}', height=500,
+    return _apply_layout(fig, f'Day Replay — {date_str}  |  P&L: Rs {pnl:,.2f}', height=460,
                          xaxis_title='Time', yaxis_title='Spot Price')
 
 
@@ -600,10 +612,11 @@ def plot_fold_accuracy(fold_results):
 
     fig = go.Figure(go.Bar(
         x=[f'Fold {f}' for f in folds], y=accs,
-        marker_color=BLUE, opacity=0.85,
+        marker_color=ACCENT, opacity=0.85,
         text=[f'{a:.4f}' for a in accs], textposition='auto',
+        textfont=dict(color=TEXT, size=11),
     ))
-    fig.add_hline(y=avg_acc, line_dash='dash', line_color=GOLD,
+    fig.add_hline(y=avg_acc, line_dash='dash', line_color=MUTED,
                   annotation_text=f'Avg {avg_acc:.4f}')
-    return _apply_layout(fig, 'Walk-Forward Out-of-Sample Accuracy', height=400,
+    return _apply_layout(fig, 'Walk-Forward OOS Accuracy', height=380,
                          xaxis_title='Fold', yaxis_title='Accuracy')
