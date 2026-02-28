@@ -1,6 +1,5 @@
 # ⚡ Regime-Switch ML Bot — NIFTY 5-Min Scalper
 
-![Main Dashboard Overview](outputs/image1.jpeg)
 
 A production-grade **Streamlit dashboard** for a regime-aware, ML-driven NIFTY 50 intraday scalping strategy.  
 Built from a walk-forward **RandomForest** model trained on 50,000+ five-minute bars, with dynamic position sizing, four-regime market classification, and institutional-level risk management.
