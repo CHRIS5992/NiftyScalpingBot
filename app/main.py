@@ -241,7 +241,6 @@ tabs = st.tabs([
 with tabs[0]:
     c1, c2 = st.columns([2, 1])
     with c1:
-        st.markdown('<div class="info-card">', unsafe_allow_html=True)
         st.markdown('#### 🎯 Strategy Description')
         st.markdown("""
         **Regime-Switch ML Bot** — A NIFTY 5-minute scalping strategy using a RandomForest model
@@ -256,9 +255,7 @@ with tabs[0]:
         **Key Innovation:** Dynamic position sizing based on ML confidence, regime classification,
         and anti-martingale consecutive loss penalty.
         """)
-        st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="info-card">', unsafe_allow_html=True)
         st.markdown('#### ⚙️ Entry Conditions')
         st.markdown(f"""
         1. ML signal probability ≥ **{cfg['MIN_SIGNAL_PROB']:.2f}**
@@ -266,9 +263,7 @@ with tabs[0]:
         3. Expected return (signal × 0.5%) > **{cfg['MIN_EXPECTED_RETURN']:.5f}**
         4. Dynamic lot sizing via RiskManager
         """)
-        st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="info-card">', unsafe_allow_html=True)
         st.markdown('#### 🚪 Exit Rules')
         st.markdown(f"""
         1. **Stop Loss:** Spot move < **{cfg['STOP_LOSS_PCT']*100:.2f}%**
@@ -276,10 +271,8 @@ with tabs[0]:
         3. **Time Exit:** After **{cfg['MAX_HOLD_BARS']}** bars ({cfg['MAX_HOLD_BARS']*5} min)
         4. **Regime Change:** Exit with profit if regime changes
         """)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with c2:
-        st.markdown('<div class="info-card">', unsafe_allow_html=True)
         st.markdown('#### 📋 Parameters')
         params_data = {
             'Parameter': ['Instrument', 'Timeframe', 'Type', 'Lot Size', 'ML Model',
@@ -290,10 +283,8 @@ with tabs[0]:
                       f'Rs {cfg["INITIAL_CAPITAL"]:,}', f'{cfg["MAX_RISK_PER_TRADE"]*100:.1f}%'],
         }
         st.dataframe(pd.DataFrame(params_data), hide_index=True, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
         # Data Summary
-        st.markdown('<div class="info-card">', unsafe_allow_html=True)
         st.markdown('#### 📦 Data Summary')
         if data_summary:
             st.metric('Period', f'{data_summary["start_date"]} → {data_summary["end_date"]}')
@@ -301,28 +292,23 @@ with tabs[0]:
             c2a.metric('Total Rows', f'{data_summary["total_rows"]:,}')
             c2b.metric('Trading Days', f'{data_summary["trading_days"]:,}')
             st.metric('Price Column', data_summary.get('price_col', 'spot'))
-        st.markdown('</div>', unsafe_allow_html=True)
 
         # ML Stats
         if fold_results:
-            st.markdown('<div class="info-card">', unsafe_allow_html=True)
             st.markdown('#### 🧠 Walk-Forward Performance')
             for fr in fold_results:
                 st.metric(f'Fold {fr["fold"]} Accuracy', f'{fr["accuracy"]:.4f}')
             avg_acc = np.mean([f['accuracy'] for f in fold_results])
             st.metric('Average Accuracy', f'{avg_acc:.4f}')
-            st.markdown('</div>', unsafe_allow_html=True)
 
         # Feature engineering summary
         if not df_feat.empty:
-            st.markdown('<div class="info-card">', unsafe_allow_html=True)
             st.markdown('#### 📊 Feature Summary')
             st.metric('Total Features', len(feature_cols))
             st.metric('Target Positive %', f'{df_feat["target"].mean()*100:.2f}%')
             regime_counts = df_feat['market_regime'].value_counts().sort_index()
             for i, count in regime_counts.items():
                 st.metric(f'{REGIME_MAP.get(i, f"R{i}")}', f'{count:,} ({count/len(df_feat)*100:.1f}%)')
-            st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
