@@ -1,174 +1,138 @@
 """
-utils.py — Shared helper functions & custom CSS (shadcn-inspired light theme).
+utils.py — Shared helper functions.
 """
 from __future__ import annotations
 
 
 def inject_custom_css() -> str:
-    """Return shadcn-inspired light-mode CSS for professional SaaS look."""
+    """Return custom CSS for Bloomberg-dark institutional theme."""
     return """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-    /* ── Reset & Globals ── */
+    /* ── Global ── */
     .stApp {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background-color: #FFFFFF;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
+
+    /* ── Hide default Streamlit branding ── */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
 
-    /* ── Metric Cards (shadcn card style) ── */
+    /* ── Metric Cards ── */
     div[data-testid="stMetric"] {
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        border-radius: 10px;
+        background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+        border: 1px solid #21262d;
+        border-radius: 12px;
         padding: 16px 20px;
-        box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
-        transition: box-shadow 0.15s ease, border-color 0.15s ease;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     div[data-testid="stMetric"]:hover {
-        box-shadow: 0 4px 12px rgba(99,102,241,0.10);
-        border-color: #C7D2FE;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        border-color: #FFD700;
     }
     div[data-testid="stMetric"] label {
-        color: #6B7280 !important;
-        font-size: 0.72rem !important;
+        color: #8b949e !important;
+        font-size: 0.8rem !important;
         font-weight: 500 !important;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
     div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
-        color: #111827 !important;
-        font-size: 1.4rem !important;
+        color: #e6edf3 !important;
+        font-size: 1.6rem !important;
         font-weight: 700 !important;
     }
-    div[data-testid="stMetric"] div[data-testid="stMetricDelta"] > svg { display: inline; }
 
-    /* ── Headers ── */
+    /* ── Section Headers ── */
     .gradient-header {
-        color: #111827;
-        font-size: 1.5rem;
+        background: linear-gradient(90deg, #FFD700 0%, #FF9800 50%, #FF5722 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 1.8rem;
         font-weight: 800;
-        letter-spacing: -0.4px;
-        margin-bottom: 2px;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
     }
     .sub-header {
-        color: #9CA3AF;
-        font-size: 0.85rem;
+        color: #8b949e;
+        font-size: 0.95rem;
         font-weight: 400;
-        margin-bottom: 20px;
+        margin-bottom: 24px;
     }
 
-    /* ── Info Cards ── */
+    /* ── Cards ── */
     .info-card {
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        border-radius: 10px;
+        background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+        border: 1px solid #21262d;
+        border-radius: 12px;
         padding: 20px 24px;
-        margin-bottom: 14px;
-        box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     .info-card h4 {
-        color: #111827;
-        margin-bottom: 6px;
-        font-weight: 600;
-        font-size: 0.95rem;
+        color: #FFD700;
+        margin-bottom: 8px;
+        font-weight: 700;
     }
     .info-card p, .info-card li {
-        color: #4B5563;
+        color: #c9d1d9;
         line-height: 1.7;
-        font-size: 0.87rem;
     }
 
-    /* ── Tabs (shadcn underline style) ── */
+    /* ── Tabs ── */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 0;
-        background: transparent;
-        border-bottom: 1px solid #E5E7EB;
+        gap: 2px;
+        background-color: #161b22;
+        border-radius: 8px;
+        padding: 4px;
     }
     .stTabs [data-baseweb="tab"] {
-        border-radius: 0;
-        padding: 10px 18px;
-        font-weight: 500;
-        font-size: 0.82rem;
-        color: #6B7280;
-        border-bottom: 2px solid transparent;
-        margin-bottom: -1px;
-        transition: color 0.15s, border-color 0.15s;
-    }
-    .stTabs [data-baseweb="tab"]:hover {
-        color: #111827;
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-weight: 600;
+        font-size: 0.85rem;
     }
     .stTabs [aria-selected="true"] {
-        background: transparent !important;
-        color: #6366F1 !important;
-        font-weight: 600;
-        border-bottom-color: #6366F1 !important;
+        background-color: #21262d !important;
     }
 
     /* ── Sidebar ── */
     section[data-testid="stSidebar"] {
-        background: #F9FAFB;
-        border-right: 1px solid #E5E7EB;
+        background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+        border-right: 1px solid #21262d;
     }
     section[data-testid="stSidebar"] .stMarkdown h1,
     section[data-testid="stSidebar"] .stMarkdown h2,
-    section[data-testid="stSidebar"] .stMarkdown h3,
-    section[data-testid="stSidebar"] .stMarkdown h4 {
-        color: #111827 !important;
-        font-weight: 600;
+    section[data-testid="stSidebar"] .stMarkdown h3 {
+        color: #FFD700 !important;
     }
 
     /* ── DataFrames ── */
     .stDataFrame {
-        border: 1px solid #E5E7EB;
+        border: 1px solid #21262d;
         border-radius: 8px;
         overflow: hidden;
     }
 
     /* ── Expanders ── */
     .streamlit-expanderHeader {
-        background: #F9FAFB;
+        background: #161b22;
         border-radius: 8px;
         font-weight: 600;
-        color: #111827;
     }
 
     /* ── Divider ── */
-    hr { border-color: #F3F4F6; }
-
-    /* ── Buttons (shadcn primary) ── */
-    .stDownloadButton > button,
-    .stButton > button[kind="primary"] {
-        background: #6366F1;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        padding: 8px 16px;
-        transition: background 0.15s;
-    }
-    .stDownloadButton > button:hover,
-    .stButton > button[kind="primary"]:hover {
-        background: #4F46E5;
+    hr {
+        border-color: #21262d;
     }
 
-    /* ── Progress bar ── */
-    .stProgress > div > div > div {
-        background: linear-gradient(90deg, #6366F1, #8B5CF6);
-        border-radius: 999px;
-    }
-
-    /* ── Slider accent ── */
-    .stSlider [data-baseweb="slider"] [role="slider"] {
-        background-color: #6366F1;
-    }
-
-    /* ── Semantic colors ── */
-    .metric-positive { color: #22C55E !important; font-weight: 600; }
-    .metric-negative { color: #EF4444 !important; font-weight: 600; }
-    .metric-neutral  { color: #F59E0B !important; font-weight: 600; }
+    /* ── Positive/Negative indicators ── */
+    .metric-positive { color: #00E676 !important; }
+    .metric-negative { color: #FF5252 !important; }
+    .metric-neutral  { color: #FFD700 !important; }
     </style>
     """
