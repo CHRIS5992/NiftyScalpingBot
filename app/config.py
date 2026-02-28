@@ -1,92 +1,54 @@
 """
 config.py — All strategy constants and parameters.
-Extracted verbatim from NIFTY Straddle Bot v3.0 notebook Cell 1.
+Matched to Final_straddle.ipynb (Regime-Switch ML Bot).
 """
 
 # ----------------------------------------------------------------
 # CAPITAL & POSITION SIZING
 # ----------------------------------------------------------------
 INITIAL_CAPITAL: float = 1_000_000  # Rs 10,00,000
-LOT_SIZE: int = 65                  # NIFTY lot size (2026 NSE)
-BASE_LOTS: int = 1                  # Base lots per trade
-
-# Dynamic lot sizing based on ML confidence
-ML_LOT_MAPPING: list[dict] = [
-    {'min_ml': 0.45, 'max_ml': 0.55, 'lots': 1, 'color': '#FFA500'},
-    {'min_ml': 0.55, 'max_ml': 0.70, 'lots': 2, 'color': '#00E676'},
-    {'min_ml': 0.70, 'max_ml': 1.00, 'lots': 3, 'color': '#40C4FF'},
-]
+LOT_SIZE: int = 65                  # NIFTY lot size
 
 # Risk management
-MAX_LOTS_PER_TRADE: int = 3
-MAX_CAPITAL_PER_TRADE: float = 0.02  # Max 2% of capital at risk
+MAX_RISK_PER_TRADE: float = 0.01    # 1% risk per trade
 
 # ----------------------------------------------------------------
-# STRATEGY PARAMETERS (v4.0 - Optimized)
+# STRATEGY PARAMETERS (Regime-Switch Bot)
 # ----------------------------------------------------------------
-ML_THRESHOLD: float = 0.46
-IV_ZSCORE_BOOST: float = 0.5
-IV_MIN: float = 8.5
-IV_RANK_MIN: float = 0.15
-IV_RANK_MAX: float = 0.85
-TARGET_PCT: float = 0.14       # +14% straddle -> book profit
-STOP_PCT: float = 0.07         # -7%  straddle -> cut loss
-EXPIRY_STOP: float = 0.05      # -5% tighter stop on Tuesdays (expiry)
-MAX_HOLD_BARS: int = 9         # 9 x 5min = 45 min
-MAX_TRADES_PER_DAY: int = 3
-COOLDOWN_BARS: int = 4
-SESSION_START_BAR: int = 3     # skip first 3 bars (open noise)
-SESSION_END_BAR: int = 62      # no new entries after bar 62
-LOSS_STREAK_LIMIT: int = 3     # Stop after 3 consecutive losses
+STOP_LOSS_PCT: float = -0.0015           # -0.15% Nifty Spot move
+TRAILING_STOP_ACTIVATION: float = 0.0012 # Activate trail at +0.12%
+TRAILING_STOP_DISTANCE: float = 0.0005   # Trail by 0.05%
+MAX_HOLD_BARS: int = 12                  # 60 minutes max
+MIN_EXPECTED_RETURN: float = 0.0001      # Min expected return
+MIN_SIGNAL_PROB: float = 0.32            # ML confidence threshold
 
 # ----------------------------------------------------------------
-# ML SETTINGS
+# ML SETTINGS (Walk-Forward)
 # ----------------------------------------------------------------
-TRAIN_RATIO: float = 0.80
-RF_TREES: int = 300
-GB_TREES: int = 200
-RF_MAX_DEPTH: int = 8
-RF_MIN_SAMPLES_LEAF: int = 15
-GB_MAX_DEPTH: int = 4
-GB_LEARNING_RATE: float = 0.05
-GB_SUBSAMPLE: float = 0.8
+N_SPLITS: int = 5
+N_ESTIMATORS: int = 100
+MAX_DEPTH: int = 5
 RANDOM_STATE: int = 42
-RF_WEIGHT: float = 0.50
-GB_WEIGHT: float = 0.50
+ML_EVAL_SIGNAL_PROB: float = 0.50  # Notebook Cell 3: threshold for fold accuracy eval
+
+# ----------------------------------------------------------------
+# FEATURE ENGINEERING (5-MIN BARS)
+# ----------------------------------------------------------------
+HV_SHORT_WINDOW: int = 75
+HV_LONG_WINDOW: int = 225
+MOMENTUM_THRESHOLD: float = 0.0015
 
 # ----------------------------------------------------------------
 # COST ASSUMPTIONS
 # ----------------------------------------------------------------
-SLIPPAGE_PCT: float = 0.001    # 0.1% of premium per leg
-BROKERAGE_FLAT: float = 40     # Rs 40 flat per round-trip
-TAX_RATE: float = 0.15         # 15% approximate taxes on gross
+SLIPPAGE_RATE: float = 0.001      # 0.1% of trade value
+BROKERAGE_PER_TRADE: float = 40   # Rs 40 flat per round-trip
 
 # ----------------------------------------------------------------
-# TIMEFRAME PARAMS (5min)
+# REGIME NAMES & COLORS
 # ----------------------------------------------------------------
-USE_TIMEFRAME: str = '5min'
-FUTURE_BARS: int = 3
-RS: int = 3      # short rolling window
-RM: int = 6      # medium rolling window
-RL: int = 12     # long rolling window
-ROLL_RANK: int = 78
-
-# ----------------------------------------------------------------
-# FEATURE LIST (45 features)
-# ----------------------------------------------------------------
-FEATURES: list[str] = [
-    'iv_lag1', 'iv_lag2', 'iv_lag3', 'iv_lag5',
-    'iv_ma_s', 'iv_ma_m', 'iv_ma_l', 'iv_std_s', 'iv_std_m', 'iv_std_l',
-    'iv_z', 'iv_rank', 'iv_pct1', 'iv_pct_s', 'iv_diff1', 'iv_diff_s',
-    'iv_ma_cross', 'iv_accel', 'iv_z_burst',
-    'prem_ret1', 'prem_ret_s', 'prem_ma_ratio', 'prem_std_s',
-    'spot_ret1', 'spot_ret_s', 'spot_ret_m', 'spot_rv_s', 'spot_rv_m',
-    'rv_iv_ratio', 'gamma_proxy',
-    'total_oi', 'oi_ratio', 'oi_chg1', 'oi_chg_s',
-    'total_vol', 'vol_surge', 'cp_vol_ratio', 'pcp',
-    'hour', 'minute', 'dow', 'is_expiry', 'time_from_open', 'bar_num',
-    'intraday_range',
-]
+REGIME_MAP: dict = {0: 'Trend HV', 1: 'Trend LV', 2: 'Range HV', 3: 'Range LV'}
+REGIME_COLORS: dict = {0: '#d62728', 1: '#2ca02c', 2: '#ff7f0e', 3: '#1f77b4'}
 
 # ----------------------------------------------------------------
 # COLOR PALETTE
@@ -105,43 +67,25 @@ def get_config_dict(**overrides) -> dict:
     cfg = {
         'INITIAL_CAPITAL': INITIAL_CAPITAL,
         'LOT_SIZE': LOT_SIZE,
-        'BASE_LOTS': BASE_LOTS,
-        'ML_LOT_MAPPING': ML_LOT_MAPPING,
-        'MAX_LOTS_PER_TRADE': MAX_LOTS_PER_TRADE,
-        'MAX_CAPITAL_PER_TRADE': MAX_CAPITAL_PER_TRADE,
-        'ML_THRESHOLD': ML_THRESHOLD,
-        'IV_ZSCORE_BOOST': IV_ZSCORE_BOOST,
-        'IV_MIN': IV_MIN,
-        'IV_RANK_MIN': IV_RANK_MIN,
-        'IV_RANK_MAX': IV_RANK_MAX,
-        'TARGET_PCT': TARGET_PCT,
-        'STOP_PCT': STOP_PCT,
-        'EXPIRY_STOP': EXPIRY_STOP,
+        'MAX_RISK_PER_TRADE': MAX_RISK_PER_TRADE,
+        'STOP_LOSS_PCT': STOP_LOSS_PCT,
+        'TRAILING_STOP_ACTIVATION': TRAILING_STOP_ACTIVATION,
+        'TRAILING_STOP_DISTANCE': TRAILING_STOP_DISTANCE,
         'MAX_HOLD_BARS': MAX_HOLD_BARS,
-        'MAX_TRADES_PER_DAY': MAX_TRADES_PER_DAY,
-        'COOLDOWN_BARS': COOLDOWN_BARS,
-        'SESSION_START_BAR': SESSION_START_BAR,
-        'SESSION_END_BAR': SESSION_END_BAR,
-        'LOSS_STREAK_LIMIT': LOSS_STREAK_LIMIT,
-        'TRAIN_RATIO': TRAIN_RATIO,
-        'RF_TREES': RF_TREES,
-        'GB_TREES': GB_TREES,
-        'RF_MAX_DEPTH': RF_MAX_DEPTH,
-        'RF_MIN_SAMPLES_LEAF': RF_MIN_SAMPLES_LEAF,
-        'GB_MAX_DEPTH': GB_MAX_DEPTH,
-        'GB_LEARNING_RATE': GB_LEARNING_RATE,
-        'GB_SUBSAMPLE': GB_SUBSAMPLE,
+        'MIN_EXPECTED_RETURN': MIN_EXPECTED_RETURN,
+        'MIN_SIGNAL_PROB': MIN_SIGNAL_PROB,
+        'N_SPLITS': N_SPLITS,
+        'N_ESTIMATORS': N_ESTIMATORS,
+        'MAX_DEPTH': MAX_DEPTH,
         'RANDOM_STATE': RANDOM_STATE,
-        'RF_WEIGHT': RF_WEIGHT,
-        'GB_WEIGHT': GB_WEIGHT,
-        'SLIPPAGE_PCT': SLIPPAGE_PCT,
-        'BROKERAGE_FLAT': BROKERAGE_FLAT,
-        'TAX_RATE': TAX_RATE,
-        'USE_TIMEFRAME': USE_TIMEFRAME,
-        'FUTURE_BARS': FUTURE_BARS,
-        'RS': RS, 'RM': RM, 'RL': RL,
-        'ROLL_RANK': ROLL_RANK,
-        'FEATURES': FEATURES,
+        'ML_EVAL_SIGNAL_PROB': ML_EVAL_SIGNAL_PROB,
+        'HV_SHORT_WINDOW': HV_SHORT_WINDOW,
+        'HV_LONG_WINDOW': HV_LONG_WINDOW,
+        'MOMENTUM_THRESHOLD': MOMENTUM_THRESHOLD,
+        'SLIPPAGE_RATE': SLIPPAGE_RATE,
+        'BROKERAGE_PER_TRADE': BROKERAGE_PER_TRADE,
+        'REGIME_MAP': REGIME_MAP,
+        'REGIME_COLORS': REGIME_COLORS,
     }
     cfg.update(overrides)
     return cfg

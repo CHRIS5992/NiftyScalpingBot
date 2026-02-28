@@ -1,6 +1,32 @@
+# Python
 __pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
 .venv/
 venv/
-*.pyc
-.ipynb_checkpoints/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# App cache (regenerated at runtime)
+cache/
+
+# Temp / test files
+temp_script.py
+update_utils.py
+test_pipeline.py
+verify_pipeline.py

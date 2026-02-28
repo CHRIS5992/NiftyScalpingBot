@@ -1,5 +1,6 @@
 """
 monte_carlo.py — Bootstrap resampling simulation.
+Matches notebook Cell 11 chart 15.
 """
 from __future__ import annotations
 
@@ -30,30 +31,34 @@ def run_monte_carlo(
 
     # Generate all simulations at once (vectorized)
     indices = np.random.randint(0, n_trades, size=(n_simulations, n_trades))
-    sampled_returns = returns[indices]  # shape: (n_sims, n_trades)
+    sampled_returns = returns[indices]
     cumulative = np.cumsum(sampled_returns, axis=1)
-    equity_paths = initial_capital + cumulative
 
-    # Add starting column
-    start_col = np.full((n_simulations, 1), initial_capital)
-    equity_paths = np.hstack([start_col, equity_paths])
+    # Equity-style paths (cumulative P&L, starting from 0)
+    start_col = np.zeros((n_simulations, 1))
+    equity_paths = np.hstack([start_col, cumulative])
 
     final_values = equity_paths[:, -1]
 
+    # Actual strategy path
+    actual_cum = np.cumsum(returns)
+    actual_path = np.concatenate([[0], actual_cum])
+
     return {
-        'equity_paths':     equity_paths,
-        'final_values':     final_values,
-        'median_final':     float(np.median(final_values)),
-        'p5_final':         float(np.percentile(final_values, 5)),
-        'p25_final':        float(np.percentile(final_values, 25)),
-        'p75_final':        float(np.percentile(final_values, 75)),
-        'p95_final':        float(np.percentile(final_values, 95)),
-        'mean_final':       float(np.mean(final_values)),
-        'std_final':        float(np.std(final_values)),
-        'prob_profit':      float((final_values > initial_capital).mean() * 100),
-        'prob_double':      float((final_values > 2 * initial_capital).mean() * 100),
-        'worst_case':       float(np.min(final_values)),
-        'best_case':        float(np.max(final_values)),
-        'n_simulations':    n_simulations,
-        'n_trades':         n_trades,
+        'equity_paths': equity_paths,
+        'actual_path': actual_path,
+        'final_values': final_values,
+        'median_final': float(np.median(final_values)),
+        'p5_final': float(np.percentile(final_values, 5)),
+        'p25_final': float(np.percentile(final_values, 25)),
+        'p75_final': float(np.percentile(final_values, 75)),
+        'p95_final': float(np.percentile(final_values, 95)),
+        'mean_final': float(np.mean(final_values)),
+        'std_final': float(np.std(final_values)),
+        'prob_profit': float((final_values > 0).mean() * 100),
+        'prob_double': float((final_values > initial_capital).mean() * 100),
+        'worst_case': float(np.min(final_values)),
+        'best_case': float(np.max(final_values)),
+        'n_simulations': n_simulations,
+        'n_trades': n_trades,
     }

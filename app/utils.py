@@ -4,32 +4,6 @@ utils.py — Shared helper functions.
 from __future__ import annotations
 
 
-def max_streak(series, positive: bool = True) -> int:
-    """Return longest consecutive streak of positive (or negative) values.
-    
-    Exact reproduction of notebook Cell 7 helper.
-    """
-    st, mx = 0, 0
-    for v in series:
-        if (v > 0) == positive:
-            st += 1
-            mx = max(mx, st)
-        else:
-            st = 0
-    return mx
-
-
-def get_lot_size(ml_score: float, ml_lot_mapping: list[dict], base_lots: int = 1) -> int:
-    """Return number of lots based on ML confidence score.
-    
-    Exact reproduction of notebook Cell 6 helper.
-    """
-    for level in ml_lot_mapping:
-        if level['min_ml'] <= ml_score < level['max_ml']:
-            return level['lots']
-    return base_lots
-
-
 def inject_custom_css() -> str:
     """Return custom CSS for Bloomberg-dark institutional theme."""
     return """
@@ -40,7 +14,7 @@ def inject_custom_css() -> str:
     .stApp {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
-    
+
     /* ── Hide default Streamlit branding ── */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
