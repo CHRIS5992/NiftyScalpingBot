@@ -427,7 +427,7 @@ with tabs[2]:
         ]
         avail_cols = [c for c in display_cols if c in tdf.columns]
         st.dataframe(
-            tdf[avail_cols].style.applymap(
+            tdf[avail_cols].style.map(
                 lambda v: 'color: #34D399' if isinstance(v, (int, float)) and v > 0
                 else ('color: #F87171' if isinstance(v, (int, float)) and v < 0 else ''),
                 subset=[c for c in ['net_pnl', 'gross_pnl', 'pnl_pct'] if c in avail_cols],
